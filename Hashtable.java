@@ -8,6 +8,9 @@ public class Hashtable {
     private double LOAD_THRESHOLD;
     private int entries;
 
+    /**
+     * constructor
+     */
     public Hashtable(){
         numBuckets = 10000;
         bucket = new ArrayList<HashNode>();
@@ -19,6 +22,9 @@ public class Hashtable {
         }
     }
 
+    /**
+     * This is the inner class HashNode
+     */
     class HashNode{
         String key;
         String value;
@@ -32,14 +38,29 @@ public class Hashtable {
 
     }
 
+    /**
+     * This method is to get the Hash Code of the key
+     * @param key This is the key
+     * @return This returns the Hash Code
+     */
     int getHash(String key){
         return abs(key.hashCode() % numBuckets);
     }
 
+    /**
+     * This method is to check if the key exists
+     * @param key This is the key
+     * @return This returns <code>true</code> if the key exists otherwise returns <code>false</code>
+     */
     public boolean containsKey(String key){
         return bucket.get(getHash(key)) != null;
     }
 
+    /**
+     * This method is to find the the key/value pair in the hash table
+     * @param key This is the key
+     * @return This returns the value of the key returns null if the key does not exist
+     */
     public String get(String key){
         HashNode head = bucket.get(getHash(key));
 
@@ -52,11 +73,18 @@ public class Hashtable {
         return null;
     }
 
+    /**
+     * This method is to add the key/value pair into the hash table
+     * replace the value if the key exists
+     * @param key This is the key
+     * @param value This is the value
+     */
     public void put(String key, String value){
-        HashNode head = bucket.get(getHash(key));
+        int hashCode = getHash(key);
+        HashNode head = bucket.get(hashCode);
 
         if(head == null){
-            bucket.set(getHash(key), new HashNode(key, value));
+            bucket.set(hashCode, new HashNode(key, value));
         }else{
             while(head != null){
                 if(head.key == key){
@@ -66,8 +94,8 @@ public class Hashtable {
                 head = head.next;
             }
             HashNode node = new HashNode(key, value);
-            node.next = bucket.get(getHash(key));
-            bucket.set(getHash(key), node);
+            node.next = bucket.get(hashCode);
+            bucket.set(hashCode, node);
         }
         entries++;
         if((entries * 1.0 / numBuckets) >= LOAD_THRESHOLD){
@@ -75,12 +103,19 @@ public class Hashtable {
         }
     }
 
+    /**
+     * This method is to remove the key/value pair from the hash table
+     * @param key This is the key
+     * @return This returns the value of the key
+     * @throws Exception If the key is not present in the hash table
+     */
     public String remove(String key) throws Exception {
-        HashNode head = bucket.get(getHash(key));
+        int hashCode = getHash(key);
+        HashNode head = bucket.get(hashCode);
 
         if(head != null){
             if(head.key == key){
-                bucket.set(getHash(key), head.next);
+                bucket.set(hashCode, head.next);
                 entries--;
                 return head.value;
             }else{
@@ -100,6 +135,10 @@ public class Hashtable {
             throw new Exception();
         }
     }
+
+    /**
+     * This method is to increase the number of buckets by 2 if the <code>LOAD_THRESHOLD</code> is greater than 0.5
+     */
     void increaseBucket() {
         ArrayList<HashNode> temp = bucket;
         numBuckets *= 2;
